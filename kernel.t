@@ -4,11 +4,6 @@ asm {
 	jmp kernel_main
 }
 
-/*
- /* nested */
-   comments!
-*/
-
 var tty_buffer: u16*;
 var tty_width: u8;
 var tty_height: u8;
@@ -18,7 +13,7 @@ var cursor_y: u8;
 
 fn clear_screen() {
 	var index: u16 = 0;
-	var entry: u16 = 0x8700 | ' ';
+	var entry: u16 = 0x0700 | ' ';
 	while index < tty_width * tty_height {
 		tty_buffer[index] = entry;
 		index = index + 1;
@@ -32,7 +27,7 @@ fn write_char(c: s8) {
 		if cursor_y >= tty_height
 			cursor_y = 0;
 	} else {
-		tty_buffer[cursor_x + tty_width * cursor_y] = 0x8700 | c;
+		tty_buffer[cursor_x + tty_width * cursor_y] = 0x0700 | c;
 		cursor_x = cursor_x + 1;
 		if cursor_x >= tty_width {
 			cursor_x = 0;

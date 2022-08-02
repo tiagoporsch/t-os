@@ -11,36 +11,11 @@ boot:
 	mov ds, ax
 	mov es, ax
 
-	; Read first root entry
-	mov ax, 1
-	mov dx, 2049
-	call read_disk
-
-	; Check if it is the kernel file
-check:
-	mov si, .filename
-	mov di, buffer + 24
-	mov cx, 10
-	rep cmpsb
-	je found
-
-	mov ax, 1
-	mov dx, [buffer + 508]
-	test dx, dx
-	jz $
-	call read_disk
-	jmp check
-
-	.filename db "kernel.bin", 0
-
-found:
-	xor dx, dx
-	mov ax, word [buffer + 8]
-	mov cx, 512
-	add ax, cx
-	div cx
-	mov dx, word [buffer + 4]
-	call read_disk
+	; Load kernel
+	mov ah, 0x42
+	mov dl, 0x80
+	mov si, dap
+	int 0x13
 
 	; Set up paging
 	; zero out a 16KiB buffer at 0x1000
@@ -110,15 +85,6 @@ found:
 	jmp gdt.code:main64
 
 
-read_disk:
-	mov word [dap.sectors], ax
-	mov word [dap.lba], dx
-	mov ah, 0x42
-	mov dl, 0x80
-	mov si, dap
-	int 0x13
-	ret
-
 ; Global descriptor table
 align 8
 gdt:
@@ -134,11 +100,11 @@ gdt:
 ; Data address packet
 dap:
 .size		db 0x10
-.unused		db 0x0
-.sectors	dw 0x1
+.unused		db 0x00
+.sectors	dw 0x10
 .offset		dw 0x0
 .segment	dw 0x7E0
-.lba		dq 0x0
+.lba		dq 0x1
 
 ; 64 bits
 bits 64

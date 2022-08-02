@@ -1,0 +1,5 @@
+.vscode
+boot.bin
+hdd.img
+kernel.bin
+kernel.s

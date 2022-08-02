@@ -1,11 +1,11 @@
 TC:=../tc/tc
-TFSTOOL:=../tfstool/tfstool
+TFS:=../tfs/tfstool
 
 hdd.img: boot.bin kernel.bin
 	cp boot.bin hdd.img
 	truncate -s 64M hdd.img
-	$(TFSTOOL) $@ format
-	$(TFSTOOL) $@ put kernel.bin /kernel.bin
+	$(TFS) $@ format
+	$(TFS) $@ reserve kernel.bin
 
 %.bin: %.s
 	nasm -f bin -o $@ $^
